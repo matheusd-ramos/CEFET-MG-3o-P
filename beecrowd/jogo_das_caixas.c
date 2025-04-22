@@ -1,45 +1,60 @@
 #include <stdio.h>
 
-int maiorValorDaLinha(int **mat, int i, int j){
-    int maior_valor = mat[i][0];
-    for(int k=1; k<j; k++){
-        if(mat[i][k] > maior_valor)
-            maior_valor = mat[i][k];
+// Acha o maior valor de uma linha e salva seu índice (coluna, caixa)
+int encontraMaiorValor(int linha, int N, int mat[][N], int* indice) {
+    int maior_valor = mat[linha][0];
+    *indice = 0;
+    
+    for(int i = 1; i < N; i++) {
+        if(mat[linha][i] > maior_valor) {
+            maior_valor = mat[linha][i];
+            *indice = i;
+        }
     }
     return maior_valor;
 }
 
-int main(){
-    int N, maior_soma;
-
+int main() {
+    int N;
     scanf("%d", &N);
 
     int mat[N][N];
+    int maior_soma = 0, soma = 0;
+    int camada = 0, caixa = 0;
 
-    // Preencher a matriz com 0
-    for(int i=0; i<N; i++){
-        for(int j=0; j<N; j++){
+    // Preenche a matriz com 0
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < N; j++) {
             mat[i][j] = 0;
         }
     }
 
-    // Coloca os elementos na matriz
-    for(int i=0; i<N; i++){
-        for(int j=0; j<N; j++){
-            if(j>i)
-                continue;
+    // Lê os elementos do teclado e salva na matriz (somente da diagonal principal para baixo)
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j <= i; j++) {
             scanf("%d", &mat[i][j]);
         }
     }
 
-    for(int i=0; i<N; i++){
-        for(int j=0; j<N; j++){
-            printf("%d ", mat[i][j]);
+    // Pega o maior valor da ultima linha e realiza a soma com ele, adimitindo ser a maior
+    // Depois faz isso com as outras linhas até achar uma que seja maior
+    for(int linha = N-1; linha >= 0; linha--) {
+        int indice_maior;
+        soma = encontraMaiorValor(linha, N, mat, &indice_maior);
+
+        for(int i = 0; i < linha; i++) {
+            for(int j = 0; j <= i; j++) {
+                soma += mat[i][j];
+            }
         }
-        printf("\n");
+
+        if(soma > maior_soma) {
+            maior_soma = soma;
+            camada = linha + 1;
+            caixa = indice_maior + 1;  
+        }
     }
 
-    maior_soma = maiorValorDaLinha(mat, 2, N);
-
-    printf("%d", maior_soma);
+    printf("Resposta: camada %d, caixa %d.\n", camada, caixa);
+    return 0;
 }
