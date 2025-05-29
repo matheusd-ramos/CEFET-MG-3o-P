@@ -17,7 +17,22 @@ void ordenaVetor(int vetor[], int N, int *vetorOrdenado){
     }
 }
 
-int defineSegmentos(int *vetorOrdenado, int N){
+int* simplificaVetor(int *vetorOrdenado, int N, int *tam) {
+    int *vetorSimplificado = malloc(sizeof(int) * N); 
+    *tam = 0;
+
+    for (int i = 0; i < N; i++) {
+        if (i == 0 || vetorOrdenado[i] != vetorOrdenado[i - 1]) {
+            vetorSimplificado[*tam] = vetorOrdenado[i];
+            (*tam)++;
+        }
+    }
+
+    vetorSimplificado = realloc(vetorSimplificado, (*tam) * sizeof(int));
+    return vetorSimplificado;
+}
+
+int contaSegmentos(int *vetorOrdenado, int N){
     int numSegmentos=0;
     for(int i=0; i<N; i++){
         if(vetorOrdenado[i] != vetorOrdenado[i+1])
@@ -26,8 +41,29 @@ int defineSegmentos(int *vetorOrdenado, int N){
     return numSegmentos;
 }
 
-int main(){
+int buscaSegmentoDoNum(int *vetorSimplificado, int num, int tam){
+    for(int i=0; i<tam; i++){
+        if(vetorSimplificado[i] == num)
+            return i+1;
+    }
+}
 
+int* criaVetorSegmentos(int vetor[], int *vetorSimplificado, int tam, int N){
+    int *vetorSegmentos = malloc(N*sizeof(int));
+    int tamVetorSegmentos = 1;
+
+    for(int i=0; i<N-1; i++){
+        if(vetor[i] != vetor[i+1]){
+            vetorSegmentos[tamVetorSegmentos-1] = buscaSegmentoDoNum(vetorSimplificado, vetor[i], tam);
+            tamVetorSegmentos++;
+        }
+    }
+
+    vetorSegmentos = realloc(vetorSegmentos, tamVetorSegmentos * sizeof(int));
+    return vetorSegmentos;
+}
+
+int main(){
     int N;
     scanf("%d", &N);
 
@@ -45,7 +81,19 @@ int main(){
         printf("%d ", vetorOrdenado[i]);
     }
 
-    printf("\n%d", defineSegmentos(vetorOrdenado, N));
+    printf("\n\n");
+
+    int numSegmentos = contaSegmentos(vetor, N);
+
+    int *tam = malloc(sizeof(int));
+
+    int *vetorSimplificado = simplificaVetor(vetorOrdenado, N, tam);
+    int *vetorSegmentos = criaVetorSegmentos(vetor, vetorSimplificado, tam, N);
+
+    for(int i=0; i<*tam; i++){
+        printf("%d ", vetorSimplificado[i]);
+    }
+
 
     return 0;
 }
