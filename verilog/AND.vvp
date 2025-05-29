@@ -1,0 +1,48 @@
+#! /c/Source/iverilog-install/bin/vvp
+:ivl_version "12.0 (devel)" "(s20150603-1539-g2693dd32b)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "C:\iverilog\lib\ivl\system.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_sys.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_textio.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2005_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\va_math.vpi";
+S_000002165f8956c0 .scope module, "AND" "AND" 2 1;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "a";
+    .port_info 1 /INPUT 1 "b";
+    .port_info 2 /OUTPUT 1 "result";
+o000002165f897008 .functor BUFZ 1, C4<z>; HiZ drive
+v000002165f890940_0 .net "a", 0 0, o000002165f897008;  0 drivers
+v000002165f8909e0_0 .net "aux", 0 0, L_000002165f862fd0;  1 drivers
+o000002165f897038 .functor BUFZ 1, C4<z>; HiZ drive
+v000002165f890a80_0 .net "b", 0 0, o000002165f897038;  0 drivers
+v000002165f890b20_0 .net "result", 0 0, L_000002165f863290;  1 drivers
+S_000002165f895850 .scope module, "nand1" "NAND" 2 7, 3 1 0, S_000002165f8956c0;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "a";
+    .port_info 1 /INPUT 1 "b";
+    .port_info 2 /OUTPUT 1 "result";
+L_000002165f9d9cf0 .functor AND 1, o000002165f897008, o000002165f897038, C4<1>, C4<1>;
+L_000002165f862fd0 .functor NOT 1, L_000002165f9d9cf0, C4<0>, C4<0>, C4<0>;
+v000002165f9d9c50_0 .net *"_ivl_0", 0 0, L_000002165f9d9cf0;  1 drivers
+v000002165f862bf0_0 .net "a", 0 0, o000002165f897008;  alias, 0 drivers
+v000002165f9deef0_0 .net "b", 0 0, o000002165f897038;  alias, 0 drivers
+v000002165f8959e0_0 .net "result", 0 0, L_000002165f862fd0;  alias, 1 drivers
+S_000002165f8dbc40 .scope module, "nand2" "NAND" 2 8, 3 1 0, S_000002165f8956c0;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "a";
+    .port_info 1 /INPUT 1 "b";
+    .port_info 2 /OUTPUT 1 "result";
+L_000002165f863130 .functor AND 1, L_000002165f862fd0, L_000002165f862fd0, C4<1>, C4<1>;
+L_000002165f863290 .functor NOT 1, L_000002165f863130, C4<0>, C4<0>, C4<0>;
+v000002165f895a80_0 .net *"_ivl_0", 0 0, L_000002165f863130;  1 drivers
+v000002165f8dbdd0_0 .net "a", 0 0, L_000002165f862fd0;  alias, 1 drivers
+v000002165f8dbe70_0 .net "b", 0 0, L_000002165f862fd0;  alias, 1 drivers
+v000002165f8dbf10_0 .net "result", 0 0, L_000002165f863290;  alias, 1 drivers
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "AND.v";
+    "NAND.v";
