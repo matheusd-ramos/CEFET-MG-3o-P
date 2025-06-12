@@ -30,8 +30,8 @@ void FLVazia(TipoLista *Lista){
     Lista->Ultimo = Lista->Primeiro;
 }
 
-int Vazia(TipoLista *Lista){
-    return(Lista->Primeiro==Lista->Ultimo);
+int Vazia(TipoLista Lista){
+    return(Lista.Primeiro==Lista.Ultimo);
 }
 
 void Insere(Segmento x, TipoLista *Lista){
@@ -45,7 +45,7 @@ void Insere(Segmento x, TipoLista *Lista){
 
 void Retira(TipoApontador p, TipoLista *Lista, Segmento *seg){
     int aux;
-    if(Vazia(Lista) || p >= Lista->Ultimo){
+    if(Vazia(*Lista) || p >= Lista->Ultimo){
         printf("Erro: posicao nao existe\n");
         return;
     }
@@ -55,6 +55,48 @@ void Retira(TipoApontador p, TipoLista *Lista, Segmento *seg){
     for(aux=p; aux < Lista->Ultimo; aux++){
         Lista->Segmentos[aux-1] = Lista->Segmentos[aux];
     }
+}
+
+void Imprime(TipoLista Lista){
+    for(int i = Lista.Primeiro-1; i <= (Lista.Ultimo-2); i++){
+        printf("%d\n", Lista.Segmentos[i].Chave);
+    }
+}
+
+void preencherLista(TipoLista *Lista, int vetor[], int N, int *vetSeg, int tamVetSimp){
+    int numAtual = vetor[0];
+    int cont = 1;
+    int chaveAtual = 1;
+    int inicio = 0;
+
+    // Insere os segmentos com seus tipos
+    for(int i=0; i<tamVetSimp; i++){
+        Segmento segAtual;
+        segAtual.Chave = i+1;
+        segAtual.TipoSegmento = vetSeg[i];
+        segAtual.NumElementos = 0;  
+        segAtual.PontoMedio = 0;    
+        Insere(segAtual, Lista);
+    }
+
+    // Atualiza o número de elementos e ponto médio
+    for(int i=1; i<N; i++){
+        if(vetor[i] == numAtual){
+            cont++;
+        } else {
+            Lista->Segmentos[chaveAtual-1].NumElementos = cont;
+            Lista->Segmentos[chaveAtual-1].PontoMedio = inicio + (cont - 1) / 2;
+            
+            numAtual = vetor[i];
+            inicio = i;
+            cont = 1;
+            chaveAtual++;
+        }
+    }
+    
+    // Atualiza o último segmento
+    Lista->Segmentos[chaveAtual-1].NumElementos = cont;
+    Lista->Segmentos[chaveAtual-1].PontoMedio = inicio + (cont - 1) / 2;
 }
 
 /* Fiz uma função para ler a entrada e, ao mesmo tempo, criar um vetor simplificado 
@@ -133,14 +175,15 @@ void criarVetSeg(int tamVetSimp, int *vetSimp, int **vetSeg) {
 }
 
 int verificaSeg(int *vetSeg, int tamVetSimp, int sequencia[]){
-    int cont=0;
-    for(int i=0; i<tamVetSimp-5; i++){
-        cont=0;
+    for(int i=0; i<tamVetSimp-4; i++){
+        int match = 1;
         for(int j=0; j<5; j++){
-            if(vetSeg[i+j] == sequencia[j])
-                cont++;
+            if(vetSeg[i+j] != sequencia[j]){
+                match = 0;
+                break;
+            }
         }
-        if(cont == 5)
+        if(match)
             return 1;
     }
     return 0;
@@ -154,8 +197,41 @@ int main(){
     int sequencia[] = {1, 3, 2, 3, 1};
     int *vetSimp, *vetSeg;
     int tamVetSimp = lerEntrada(N, vetor, &vetSimp);
+   
+    /*
+    printf("\nVetor simplificado: ");
+    for(int i = 0; i < tamVetSimp; i++){
+        printf("%d ", vetSimp[i]);
+    }
+    printf("\n");
+    */
 
     criarVetSeg(tamVetSimp, vetSimp, &vetSeg);
+
+    /*
+    printf("\nVetor de segmentos: ");
+    for(int i = 0; i < tamVetSimp; i++){
+        printf("%d ", vetSeg[i]);
+    }
+    printf("\n");
+    */
+
+    TipoLista Lista;
+    FLVazia(&Lista);
+    preencherLista(&Lista, vetor, N, vetSeg, tamVetSimp);
+    
+    /*
+    printf("\nLista de segmentos:\n");
+    printf("Chave | Tipo | NumElementos | PontoMedio\n");
+    for(int i = Lista.Primeiro-1; i < (Lista.Ultimo-1); i++){
+        printf("%5d | %4d | %11d | %10d\n", 
+               Lista.Segmentos[i].Chave,
+               Lista.Segmentos[i].TipoSegmento,
+               Lista.Segmentos[i].NumElementos,
+               Lista.Segmentos[i].PontoMedio);
+    }
+    printf("\n");
+    */
     
     if(verificaSeg(vetSeg, tamVetSimp, sequencia)){
         printf("Resultado: Padrao encontrado.\n");
