@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "*.v": "verilog",
+        "*.vh": "verilog",
+        "*.sv": "systemverilog"
+    },
+    "verilog.formatting.iverilog": "iverilog",
+    "verilog.linting.iverilog": "iverilog",
+    "verilog.includeIndexing": true,
+    "verilog.includePaths": [
+        "./verilog",
+        "./verilog/projeto"
+    ],
+    "verilog.defines": [],
+    "verilog.linting.verilator": "verilator",
+    "verilog.linting.verilator.arguments": [
+        "--lint-only",
+        "--Wall"
+    ]
+} 
