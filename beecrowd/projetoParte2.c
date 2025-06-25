@@ -127,8 +127,8 @@ int lerEntrada(int N, int vetor[], int **vetSimp){
 }
 
 /* Essa função une a ordenação dos vetores com a criação de um vetor de mapeamento,
-   ao invés de ter uma função para cada uma dessas etapas*/
-void criarVetSeg(int tamVetSimp, int *vetSimp, int **vetSeg) {
+   ao invés de ter uma função para cada uma dessas etapas */
+void criarTiposSeg(int tamVetSimp, int *vetSimp, int **vetSeg) {
     *vetSeg = (int*)malloc(tamVetSimp * sizeof(int));
     
     int *valoresUnicos = (int*)malloc(tamVetSimp * sizeof(int));
@@ -174,11 +174,11 @@ void criarVetSeg(int tamVetSimp, int *vetSimp, int **vetSeg) {
     free(valoresUnicos);
 }
 
-int verificaSeg(int *vetSeg, int tamVetSimp, int sequencia[]){
+int verificaSeg(int *tiposSeg, int tamVetSimp, int sequencia[]){
     for(int i=0; i<tamVetSimp-4; i++){
         int match = 1;
         for(int j=0; j<5; j++){
-            if(vetSeg[i+j] != sequencia[j]){
+            if(tiposSeg[i+j] != sequencia[j]){
                 match = 0;
                 break;
             }
@@ -189,59 +189,82 @@ int verificaSeg(int *vetSeg, int tamVetSimp, int sequencia[]){
     return 0;
 }
 
+int verificaCurva(TipoLista Listas[], int L, int entradasN[], int seqIdentificada[]){
+    int cont=0;
+    for(int i=0; i<L; i++){
+        if(seqIdentificada[i])
+            cont++;
+    }
+
+    /* Condição para verificar se a quantidade de linhas que contém a sequência é 
+       maior ou igual à 70% das linhas */
+    if(cont < 0.7 * L)
+        return 0;
+
+     for(int i=0; i<L; i++){
+        if(seqIdentificada[i]){
+            Listas[i].Segmentos->PontoMedio > entradasN[i]/2;
+        }
+    }
+}
+
 int main(){
-    int L, N;
-    scanf("%d", &L);
-    scanf("%d", &N);
-    
-    int vetor[N];  
+
     int sequencia[] = {1, 3, 2, 3, 1};
-    int *vetSimp, *vetSeg;
-    int tamVetSimp = lerEntrada(N, vetor, &vetSimp);
-   
-    /*
-    printf("\nVetor simplificado: ");
-    for(int i = 0; i < tamVetSimp; i++){
-        printf("%d ", vetSimp[i]);
-    }
-    printf("\n");
-    */
 
-    criarVetSeg(tamVetSimp, vetSimp, &vetSeg);
+    int L;
+    scanf("%d", &L);
 
-    /*
-    printf("\nVetor de segmentos: ");
-    for(int i = 0; i < tamVetSimp; i++){
-        printf("%d ", vetSeg[i]);
-    }
-    printf("\n");
-    */
+    // Criando um vetor de listas de segmentos
+    TipoLista Listas[L];
 
-    TipoLista Lista;
-    FLVazia(&Lista);
-    preencherLista(&Lista, vetor, N, vetSeg, tamVetSimp);
-    
-    /*
-    printf("\nLista de segmentos:\n");
-    printf("Chave | Tipo | NumElementos | PontoMedio\n");
-    for(int i = Lista.Primeiro-1; i < (Lista.Ultimo-1); i++){
-        printf("%5d | %4d | %11d | %10d\n", 
-               Lista.Segmentos[i].Chave,
-               Lista.Segmentos[i].TipoSegmento,
-               Lista.Segmentos[i].NumElementos,
-               Lista.Segmentos[i].PontoMedio);
+    // Vetor para armazenar a entrada N de cada linha
+    int entradasN[L];
+
+    // Vetor para identificar as linhas nas quais a sequência foi identificada
+    int seqIdentificada[L];
+
+    for(int i=0; i<L; i++){
+        // Lê a qtde de elementos e cria o vetor
+        int N;
+        scanf("%d", &N);
+        entradasN[i] = N;
+        int vetor[N];
+
+        // Lê a entrada de tamanho N
+        int *vetSimp;
+        int tamVetSimp = lerEntrada(N, vetor, &vetSimp);
+
+        // Cria o vetor de tipos de segmentos
+        int *tiposSeg;
+        criarTiposSeg(tamVetSimp, vetSimp, &tiposSeg);
+
+        seqIdentificada[i] = verificaSeg(tiposSeg, tamVetSimp, sequencia);
+
+        // Cria uma lista com os segmentos de cada linha
+        TipoLista Lista;
+        FLVazia(&Lista);
+        preencherLista(&Lista, vetor, N, tiposSeg, tamVetSimp);
+
+        Listas[i] = Lista;
+
+        // Libera a memória alocada
+        free(vetSimp);
+        free(tiposSeg);
     }
-    printf("\n");
-    */
     
-    if(verificaSeg(vetSeg, tamVetSimp, sequencia)){
-        printf("Resultado: Padrao encontrado.\n");
-    } else  
-        printf("Resultado: Padrao nao encontrado.\n");
-    
-    // Libera a memória alocada
-    free(vetSimp);
-    free(vetSeg);
+    for(int i=0; i<L; i++){
+        printf("\nLista de segmentos (linha %d):\n", i+1);
+        printf("Chave | Tipo | NumElementos | PontoMedio\n");
+        for(int j = Listas[i].Primeiro-1; j < (Listas[i].Ultimo-1); j++){
+            printf("%5d | %4d | %12d | %10d\n", 
+                Listas[i].Segmentos[j].Chave,
+                Listas[i].Segmentos[j].TipoSegmento,
+                Listas[i].Segmentos[j].NumElementos,
+                Listas[i].Segmentos[j].PontoMedio);
+        }
+        printf("\n");
+    }
     
     return 0;
 }
