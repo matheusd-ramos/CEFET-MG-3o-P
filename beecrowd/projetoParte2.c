@@ -182,23 +182,36 @@ int verificaCurva(TipoLista Listas[], int L, int entradasN[], int seqIdentificad
     if(cont < 0.7 * L)
         return 0;
 
+    // Analisa as linhas de cima para baixo e usa a primeira que contém a sequência
     for(int i=0; i<L; i++){
         if(seqIdentificada[i]){ 
             int j=0;
-            while(Listas[i].Segmentos[j].TipoSegmento != 2){
+            while(j < Listas[i].Ultimo - Listas[i].Primeiro && 
+                  Listas[i].Segmentos[j].TipoSegmento != 2){
                 j++;
             }
-            int variacao = entradasN[i]/2 - Listas[i].Segmentos[j].PontoMedio;
-            if(abs(variacao) > tolerancia){
-                if(variacao < 0)
-                    printf("Resultado: Curva a direita.\n");
-                else  
-                    printf("Resultado: Curva a esquerda.\n");
-            } else
-    
-            printf("Resultado: Pista em linha reta.\n");
+            
+            // Se encontrou o segmento tipo 2, calcula a variação
+            if(j < Listas[i].Ultimo - Listas[i].Primeiro){
+                int variacao = entradasN[i]/2 - Listas[i].Segmentos[j].PontoMedio;
+                
+                if(abs(variacao) > tolerancia){
+                    if(variacao < 0){
+                        printf("Resultado: Curva a direita.\n");
+                        return -1; 
+                    } else {
+                        printf("Resultado: Curva a esquerda.\n");
+                        return 1;  
+                    }
+                } else {
+                    printf("Resultado: Pista em linha reta.\n");
+                    return 0; 
+                }
+            }
         }
     }
+    
+    return 0;
 }
 
 int main(){
@@ -224,17 +237,14 @@ int main(){
         entradasN[i] = N;
         int vetor[N];
 
-        // Lê a entrada de tamanho N
         int *vetSimp;
         int tamVetSimp = lerEntrada(N, vetor, &vetSimp);
 
-        // Cria o vetor de tipos de segmentos
         int *tiposSeg;
         criarTiposSeg(tamVetSimp, vetSimp, &tiposSeg);
 
-        for(int i=0; i<L; i++){
-            seqIdentificada[i] = verificaSeg(tiposSeg, tamVetSimp, sequencia);
-        }
+        // Verifica se a linha contém a sequência
+        seqIdentificada[i] = verificaSeg(tiposSeg, tamVetSimp, sequencia);
 
         // Cria uma lista com os segmentos de cada linha
         TipoLista Lista;
@@ -247,6 +257,8 @@ int main(){
         free(vetSimp);
         free(tiposSeg);
     }
+
+    verificaCurva(Listas, L, entradasN, seqIdentificada);
 
     /*
     for(int i=0; i<L; i++){
