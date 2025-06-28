@@ -43,26 +43,6 @@ void Insere(Segmento x, TipoLista *Lista){
     }
 }
 
-void Retira(TipoApontador p, TipoLista *Lista, Segmento *seg){
-    int aux;
-    if(Vazia(*Lista) || p >= Lista->Ultimo){
-        printf("Erro: posicao nao existe\n");
-        return;
-    }
-
-    *seg = Lista->Segmentos[p-1];
-    Lista->Ultimo--;
-    for(aux=p; aux < Lista->Ultimo; aux++){
-        Lista->Segmentos[aux-1] = Lista->Segmentos[aux];
-    }
-}
-
-void Imprime(TipoLista Lista){
-    for(int i = Lista.Primeiro-1; i <= (Lista.Ultimo-2); i++){
-        printf("%d\n", Lista.Segmentos[i].Chave);
-    }
-}
-
 void preencherLista(TipoLista *Lista, int vetor[], int N, int *vetSeg, int tamVetSimp){
     int numAtual = vetor[0];
     int cont = 1;
@@ -190,7 +170,8 @@ int verificaSeg(int *tiposSeg, int tamVetSimp, int sequencia[]){
 }
 
 int verificaCurva(TipoLista Listas[], int L, int entradasN[], int seqIdentificada[]){
-    int cont=0;
+    int cont=0, tolerancia=30;
+    
     for(int i=0; i<L; i++){
         if(seqIdentificada[i])
             cont++;
@@ -201,9 +182,21 @@ int verificaCurva(TipoLista Listas[], int L, int entradasN[], int seqIdentificad
     if(cont < 0.7 * L)
         return 0;
 
-     for(int i=0; i<L; i++){
-        if(seqIdentificada[i]){
-            Listas[i].Segmentos->PontoMedio > entradasN[i]/2;
+    for(int i=0; i<L; i++){
+        if(seqIdentificada[i]){ 
+            int j=0;
+            while(Listas[i].Segmentos[j].TipoSegmento != 2){
+                j++;
+            }
+            int variacao = entradasN[i]/2 - Listas[i].Segmentos[j].PontoMedio;
+            if(abs(variacao) > tolerancia){
+                if(variacao < 0)
+                    printf("Resultado: Curva a direita.\n");
+                else  
+                    printf("Resultado: Curva a esquerda.\n");
+            } else
+    
+            printf("Resultado: Pista em linha reta.\n");
         }
     }
 }
@@ -239,7 +232,9 @@ int main(){
         int *tiposSeg;
         criarTiposSeg(tamVetSimp, vetSimp, &tiposSeg);
 
-        seqIdentificada[i] = verificaSeg(tiposSeg, tamVetSimp, sequencia);
+        for(int i=0; i<L; i++){
+            seqIdentificada[i] = verificaSeg(tiposSeg, tamVetSimp, sequencia);
+        }
 
         // Cria uma lista com os segmentos de cada linha
         TipoLista Lista;
@@ -252,7 +247,8 @@ int main(){
         free(vetSimp);
         free(tiposSeg);
     }
-    
+
+    /*
     for(int i=0; i<L; i++){
         printf("\nLista de segmentos (linha %d):\n", i+1);
         printf("Chave | Tipo | NumElementos | PontoMedio\n");
@@ -265,6 +261,7 @@ int main(){
         }
         printf("\n");
     }
-    
+    */
+
     return 0;
 }
