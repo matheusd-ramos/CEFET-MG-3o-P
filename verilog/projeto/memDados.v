@@ -4,12 +4,16 @@ input CLOCK, escMem, leMem;
 input [7:0] endReg, escDado;
 output reg [7:0] saiDado;
 
-// Declaração da memória de dados (256 posições de 8 bits)
+// Declaração da memória de dados (128 posições de 8 bits)
 reg [7:0] mem [0:255];
 
 initial begin
-    // Inicializando a memória com zeros
-    for(integer i = 0; i < 256; i++) begin
+    mem[0] = 8'b00000011;
+    mem[1] = 8'b00000001;
+    mem[2] = 8'b00000100;
+    mem[3] = 8'b00000010;
+    // Zera o resto da memória
+    for(integer i = 4; i < 256; i++) begin
         mem[i] = 8'b00000000;
     end
 end
