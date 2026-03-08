@@ -51,8 +51,6 @@ regFlag regFlag_modulo(
     .saiFlag(saiFlag)
 );
 
-assign pcNovo = pc + 1;
-
 // Instanciação dos módulos principais
 PC pc_modulo(.HALT(Halt), .pc(pc), .pcNovo(pcNovo), .CLOCK(CLOCK));
 
@@ -72,9 +70,5 @@ ULA ula_modulo(.r1(entradaULA1), .r2(entradaULA2), .ALUOp(ALUOp),
 
 memDados memDados_modulo(.endReg(S2), .escMem(EscMem), .leMem(LeMem), 
                         .escDado(S1), .saiDado(dadoMem), .CLOCK(CLOCK));
-
-always @(posedge CLOCK) begin
-    $display("PC=%d Instrucao=%b", pc, instrucao);
-end
 
 endmodule
